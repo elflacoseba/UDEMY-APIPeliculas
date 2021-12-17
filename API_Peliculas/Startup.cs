@@ -1,4 +1,5 @@
 using API_Peliculas.Data;
+using API_Peliculas.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,6 +27,8 @@ namespace API_Peliculas
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             services.AddRazorPages();
         }
 
