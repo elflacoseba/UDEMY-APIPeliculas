@@ -107,5 +107,31 @@ namespace API_Peliculas.Controllers
             }
 
         }
+
+        /// <summary>
+        /// Elimina una Categoría.
+        /// </summary>
+        /// <param name="Id">ID de la Categoría</param>
+        /// <param name="categoriaDTO"></param>
+        /// <returns></returns>
+        [HttpDelete("{Id:int}", Name = "EliminarCategoria")]
+        public IActionResult EliminarCategoria(int Id)
+        {
+            if (!_ctRepo.ExistsCategoria(Id))
+            {
+                return NotFound();
+            }
+            
+            if (!_ctRepo.DeleteCategoria(Id))
+            {
+                ModelState.AddModelError("", "No se pudo eliminar la categoría.");
+                return StatusCode(500, ModelState);
+            }
+            else
+            {
+                return NoContent();
+            }
+
+        }
     }
 }
