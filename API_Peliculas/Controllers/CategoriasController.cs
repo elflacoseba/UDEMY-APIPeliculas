@@ -52,5 +52,32 @@ namespace API_Peliculas.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPost]
+        public IActionResult CrearCategoria([FromBody] CategoriaDTO categoriaDTO)
+        {
+            if (categoriaDTO == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_ctRepo.ExistsCategoria(categoriaDTO.Nombre))
+            {
+                ModelState.AddModelError("", "La categoría ya existe.");
+                return StatusCode(404,ModelState);
+            }
+
+            var cat = _mapper.Map<Categoria>(categoriaDTO);
+
+           if (_ctRepo.CreateCategoria(cat))
+            {
+                return CreatedAtRoute("GetGategoria", new { Id = cat.Id }, cat);
+            }
+            else
+            {
+                ModelState.AddModelError("", $"La categoría {cat.Nombre} no se pudo crear.");
+                return StatusCode(500, ModelState);
+            }
+        }
     }
 }
