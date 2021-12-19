@@ -1,4 +1,5 @@
-﻿using API_Peliculas.Models.Dtos;
+﻿using API_Peliculas.Models;
+using API_Peliculas.Models.Dtos;
 using API_Peliculas.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,23 @@ namespace API_Peliculas.Controllers
             }
 
             return Ok(listaCategoriasDTO);
+        }
+        
+        [HttpGet("{Id:int}", Name = "GetGategoria")]
+        public IActionResult GetGategoria(int Id)
+        {
+           Categoria cat = _ctRepo.GetCategoria(Id);
+
+            if (cat != null)
+            {
+                CategoriaDTO catDTO =_mapper.Map<CategoriaDTO>(cat);  
+
+                return Ok(catDTO);  
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
