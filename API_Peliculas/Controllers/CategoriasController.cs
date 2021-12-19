@@ -79,5 +79,33 @@ namespace API_Peliculas.Controllers
                 return StatusCode(500, ModelState);
             }
         }
+
+        /// <summary>
+        /// Actualiza la información de una Categoría.
+        /// </summary>
+        /// <param name="Id">ID de la Categoría</param>
+        /// <param name="categoriaDTO"></param>
+        /// <returns></returns>
+        [HttpPatch("{Id:int}", Name = "ActualizarCategoria")]        
+        public IActionResult ActualizarCategoria(int Id, [FromBody] CategoriaDTO categoriaDTO)
+        {
+            if (categoriaDTO == null || Id != categoriaDTO.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            Categoria cat = _mapper.Map<Categoria>(categoriaDTO);
+
+           if (!_ctRepo.UpdateCategoria(cat))
+            {
+                ModelState.AddModelError("", "No se pudo actualizar la información de la categoría.");
+                return StatusCode(500, ModelState);
+            }
+            else
+            {
+                return NoContent();
+            }
+
+        }
     }
 }
