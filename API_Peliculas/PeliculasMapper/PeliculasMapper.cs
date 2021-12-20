@@ -13,6 +13,7 @@ namespace API_Peliculas.PeliculasMapper
         public PeliculasMapper()
         {
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
+            CreateMap<Pelicula, PeliculaDTO>().ReverseMap();
         }
     }
 }
