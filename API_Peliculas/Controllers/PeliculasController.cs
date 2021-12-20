@@ -2,9 +2,12 @@
 using API_Peliculas.Models.Dtos;
 using API_Peliculas.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace API_Peliculas.Controllers
 {
@@ -13,12 +16,15 @@ namespace API_Peliculas.Controllers
     public class PeliculasController : ControllerBase
     {
         private readonly IPeliculaRepository _plRepo;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly IMapper _mapper;
 
-        public PeliculasController(IPeliculaRepository plRepo, IMapper mapper)
+        public PeliculasController(IPeliculaRepository plRepo, IMapper mapper, IWebHostEnvironment hostingEnvironment)
         {
             _plRepo = plRepo;
             _mapper = mapper;
+            _hostingEnvironment = hostingEnvironment;
+
         }
 
         [HttpGet]
@@ -54,20 +60,40 @@ namespace API_Peliculas.Controllers
         }
 
         [HttpPost]
-        public IActionResult CrearPelicula([FromBody] PeliculaDTO PeliculaDTO)
+        public IActionResult CrearPelicula([FromForm] PeliculaCreateDTO peliculaCreateDTO)
         {
-            if (PeliculaDTO == null)
+            if (peliculaCreateDTO == null)
             {
                 return BadRequest(ModelState);
             }
 
-            if (_plRepo.ExistsPelicula(PeliculaDTO.Nombre))
+            if (_plRepo.ExistsPelicula(peliculaCreateDTO.Nombre))
             {
                 ModelState.AddModelError("", "La película ya existe.");
                 return StatusCode(404,ModelState);
             }
 
-            var peli = _mapper.Map<Pelicula>(PeliculaDTO);
+            /*Subida de archivo*/
+            var archivo = peliculaCreateDTO.Foto;
+            var rutaPrincipal = _hostingEnvironment.WebRootPath;
+            var archivos = HttpContext.Request.Form.Files;
+
+            if (archivo.Length > 0)
+            {
+                //nueva imagen
+                var nombreFoto = Guid.NewGuid().ToString();
+                var subidas = Path.Combine(rutaPrincipal, @"fotos");
+                var extension = Path.GetExtension(archivos[0].FileName);
+
+                using (var fileStream = new FileStream(Path.Combine(subidas,nombreFoto + extension), FileMode.Create))
+                {
+                    archivos[0].CopyTo(fileStream);
+                }
+
+                peliculaCreateDTO.RutaImagen = @"\fotos\" + nombreFoto + extension;
+            }
+
+            var peli = _mapper.Map<Pelicula>(peliculaCreateDTO);
 
            if (_plRepo.CreatePelicula(peli))
             {
