@@ -1,5 +1,6 @@
 ﻿using API_Peliculas.Data;
 using API_Peliculas.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,12 @@ namespace API_Peliculas.Repository
 
         public ICollection<Pelicula> GetPeliculas()
         {
-            return _db.Pelicula.ToList();
+            return _db.Pelicula.OrderBy(p => p.Nombre).ToList();
+        }
+
+        public ICollection<Pelicula> GetPeliculasPorCategoria(int categoriaID)
+        {
+            return _db.Pelicula.Include(p => p.Categoria).Where(c => c.CategoriaID == categoriaID).ToList();
         }
 
         public bool Save()

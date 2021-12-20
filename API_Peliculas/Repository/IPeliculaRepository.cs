@@ -10,6 +10,8 @@ namespace API_Peliculas.Repository
     {
         ICollection<Pelicula> GetPeliculas();
 
+        ICollection<Pelicula> GetPeliculasPorCategoria(int categoriaID);
+
         Pelicula GetPelicula(int id);
 
         bool ExistsPelicula(string name);
