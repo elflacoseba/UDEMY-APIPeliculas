@@ -17,6 +17,18 @@ namespace API_Peliculas.Repository
             _db = db;
         }
 
+        public IEnumerable<Pelicula> BuscarPelicula(string nombre)
+        {
+            IQueryable<Pelicula> query = _db.Pelicula;
+
+            if (! string.IsNullOrEmpty(nombre))
+            {
+                query = query.Where(q => q.Nombre.Contains(nombre) | q.Descripcion.Contains(nombre) );
+            }
+
+            return query.ToList();
+        }
+
         public bool CreatePelicula(Pelicula pelicula)
         {
             _db.Pelicula.Add(pelicula);

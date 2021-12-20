@@ -18,6 +18,8 @@ namespace API_Peliculas.Repository
 
         bool ExistsPelicula(int id);
 
+        IEnumerable<Pelicula> BuscarPelicula(string nombre);
+
         bool CreatePelicula(Pelicula pelicula);
 
         bool UpdatePelicula(Pelicula pelicula);
