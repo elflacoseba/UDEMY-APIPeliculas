@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace API_Peliculas.Controllers
 {
@@ -41,17 +42,17 @@ namespace API_Peliculas.Controllers
 
             return Ok(listaPeliculasDTO);
         }
-        
+
         [HttpGet("{Id:int}", Name = "GetPelicula")]
         public IActionResult GetPelicula(int Id)
         {
-           Pelicula peli = _plRepo.GetPelicula(Id);
+            Pelicula peli = _plRepo.GetPelicula(Id);
 
             if (peli != null)
             {
-                PeliculaDTO peliDTO = _mapper.Map<PeliculaDTO>(peli);  
+                PeliculaDTO peliDTO = _mapper.Map<PeliculaDTO>(peli);
 
-                return Ok(peliDTO);  
+                return Ok(peliDTO);
             }
             else
             {
@@ -63,7 +64,7 @@ namespace API_Peliculas.Controllers
         public IActionResult GetPeliculasEnCategoria(int categoriaId)
         {
             IEnumerable<Pelicula> pelis = _plRepo.GetPeliculasPorCategoria(categoriaId);
-           
+
             if (pelis != null)
             {
                 List<PeliculaDTO> pelisDTO = new List<PeliculaDTO>();
@@ -72,12 +73,43 @@ namespace API_Peliculas.Controllers
                 {
                     pelisDTO.Add(_mapper.Map<PeliculaDTO>(item));
                 }
-              
+
                 return Ok(pelisDTO);
             }
             else
             {
                 return NotFound();
+            }
+        }
+
+        [HttpGet("Buscar")]
+        public IActionResult Buscar(string nombre)
+        {
+
+            try
+            {
+                var pelis = _plRepo.BuscarPelicula(nombre);
+
+                if (pelis.Any())
+                {
+                    List<PeliculaDTO> pelisDTO = new List<PeliculaDTO>();
+
+                    foreach (var item in pelis)
+                    {
+                        pelisDTO.Add(_mapper.Map<PeliculaDTO>(item));    
+                    }
+
+                    return Ok(pelisDTO);
+                }
+                else
+                {
+                    return NotFound();
+                }
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error recuperando la información de la aplicación.");
             }
         }
 
