@@ -59,6 +59,28 @@ namespace API_Peliculas.Controllers
             }
         }
 
+        [HttpGet("{categoriaId:int}", Name = "GetPeliculasEnCategoria")]
+        public IActionResult GetPeliculasEnCategoria(int categoriaId)
+        {
+            IEnumerable<Pelicula> pelis = _plRepo.GetPeliculasPorCategoria(categoriaId);
+           
+            if (pelis != null)
+            {
+                List<PeliculaDTO> pelisDTO = new List<PeliculaDTO>();
+
+                foreach (var item in pelis)
+                {
+                    pelisDTO.Add(_mapper.Map<PeliculaDTO>(item));
+                }
+              
+                return Ok(pelisDTO);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [HttpPost]
         public IActionResult CrearPelicula([FromForm] PeliculaCreateDTO peliculaCreateDTO)
         {
