@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Carpeta fotos de películas
-wwwroot/fotos
+/API_Peliculas/wwwroot/fotos
