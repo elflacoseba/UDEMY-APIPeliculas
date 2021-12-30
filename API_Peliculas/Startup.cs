@@ -30,6 +30,7 @@ namespace API_Peliculas
 
             services.AddScoped<ICategoriaRepository, CategoriaRepository>();
             services.AddScoped<IPeliculaRepository, PeliculaRepository>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
             services.AddAutoMapper(typeof(PeliculasMapper.PeliculasMapper));
 

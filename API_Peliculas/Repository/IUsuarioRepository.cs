@@ -16,7 +16,7 @@ namespace API_Peliculas.Repository
 
         Usuario Registro(Usuario usuario, string password);
 
-        Usuario Login(Usuario usuario, string password);
+        Usuario Login(string usuario, string password);
 
         bool Save();
     }

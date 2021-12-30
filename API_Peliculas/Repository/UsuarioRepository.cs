@@ -31,14 +31,69 @@ namespace API_Peliculas.Repository
             return _db.Usuario.OrderBy(u => u.NombreUsuario).ToList();
         }
 
-        public Usuario Login(Usuario usuario, string password)
+        public Usuario Login(string usuario, string password)
         {
-            throw new NotImplementedException();
+            var user = _db.Usuario.FirstOrDefault(x => x.NombreUsuario == usuario);
+
+            if (user != null)
+            {
+                if (VerificaPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                {
+                    return user;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        private bool VerificaPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+            {
+                var hashComputado = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+                for (int i = 0; i < hashComputado.Length; i++)
+                {
+                    if (hashComputado[i] != passwordHash[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
 
         public Usuario Registro(Usuario usuario, string password)
         {
-            throw new NotImplementedException();
+            byte[] passwordHash, passwordSalt;
+
+            CrearPasswordHash(password, out passwordHash, out passwordSalt);
+
+            usuario.PasswordHash = passwordHash;
+            usuario.PasswordSalt = passwordSalt;
+
+            _db.Usuario.Add(usuario);
+
+            Save();
+
+            return usuario;
+        }
+
+        private void CrearPasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
 
         public bool Save()
